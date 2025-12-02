@@ -5,13 +5,21 @@ const getAllTasks = async (req, res) => {
   try {
     const allTasks = await tasksModel.find({}).sort({ createdAt: -1 });
     console.log(allTasks);
-    res
-      .status(200)
-      .json({ allTasks, message: "get all tasks", status: "success" });
+    res.status(200).json({
+      allTasks,
+      message: "all tasks fetched successfully",
+      status: "success",
+    });
   } catch (e) {
+    console.log(e);
+
     res
       .status(400)
-      .json({ allTasks, message: "Couldn't fetch tasks", status: "failed" });
+      .json({
+        allTasks: [],
+        message: "Couldn't fetch tasks",
+        status: "failed",
+      });
   }
 };
 

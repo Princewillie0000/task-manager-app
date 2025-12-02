@@ -2,7 +2,6 @@ import tasksModel from "../../models/tasksModel/tasksModel.js";
 
 async function saveTask(req, res) {
   const { task_content } = req.body;
-  console.log(req.body);
 
   if (task_content === "") {
     return res
@@ -17,12 +16,14 @@ async function saveTask(req, res) {
     });
 
     // await tasks.save();
-    console.log(tasks);
+    console.log("These are our tasks", tasks);
 
     // success message
-    res
-      .status(201)
-      .json({ tasks, message: "task created successfully", status: "success" });
+    res.status(201).json({
+      tasks,
+      message: "This task has been created successfully",
+      status: "success",
+    });
   } catch (error) {
     console.error("Error saving task: ", error);
 
