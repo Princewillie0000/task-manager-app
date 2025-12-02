@@ -1,11 +1,16 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { addNewTask } from "../features/task/taskSlice";
-import { Input, Button, Divider } from "antd";
+import { Input, Button, Divider, message } from "antd";
 import axios from "axios";
 import { serverUrl } from "../utils/helper";
 
 const AddTasks = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const info = () => {
+    messageApi.info("Task created successfully!");
+  };
+
   const [taskText, setTaskText] = React.useState("");
   const dispatch = useDispatch();
 
@@ -23,6 +28,9 @@ const AddTasks = () => {
         task_content: taskText,
       });
       dispatch(addNewTask(response.data));
+      if (response.data.status === "success") {
+        info();
+      }
       console.log(response);
     } catch (e) {
       console.log(e);
@@ -31,6 +39,7 @@ const AddTasks = () => {
 
   return (
     <div className="p-20 grid bg-white gap-2">
+      {contextHolder}
       <Input
         value={taskText}
         onChange={(event) => setTaskText(event.target.value)}

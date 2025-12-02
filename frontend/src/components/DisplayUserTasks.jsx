@@ -9,28 +9,37 @@ import {
 import EditTask from "./EditTask";
 import { serverUrl } from "../utils/helper";
 import axios from "axios";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const DisplayUserTasks = () => {
+  // const [taskContents, setTaskContents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
+
   const dispatch = useDispatch();
+  const userTasks = useSelector((state) => state.task.userTasks);
+  console.log("Component is rendering. Current tasks:", userTasks);
 
-  const taskContent = useSelector((state) => state.userTasks?.task_content);
-  const userTasks = taskContent?.data?.task_content;
-  console.log(userTasks);
-
-  if (!userTasks) {
-    return <p className="text-white font-extrabold">Loading tasks...</p>;
-  }
+  // const userTasks = taskContent?.data?.task_content;
+  console.log("Redux userTasks :", userTasks);
 
   const fetchTasks = async () => {
     try {
       const response = await axios.get(`${serverUrl}/task/allTask`);
-      dispatch(addNewTask(response.data));
-      // Assuming the response contains the tasks in the expected format
-      console.log("Fetched tasks:", response.data);
-      // Update the Redux store with the fetched tasks
-      dispatch(setUserTasks(response.data));
-      console.log(response.data);
+
+      // store tasks array in redux store
+      dispatch(
+        setUserTasks(
+          response.data.allTasks.map((t) => {
+            return {
+              ...t,
+              task_id: t.task_id || t._id,
+            };
+          })
+        )
+      );
+
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
@@ -38,21 +47,31 @@ const DisplayUserTasks = () => {
 
   useEffect(() => {
     // Fetch tasks when the component mounts
+    console.log("Fetching tasks from backend...");
+
     fetchTasks();
-    // Optionally, you can also fetch tasks when the component updates
-    // fetchTasks();
     // Cleanup function to avoid memory leaks
     return () => {
       // Any cleanup logic if needed
     };
-  }, [dispatch]);
+  }, []);
 
+  if (loading) {
+    return (
+      <p className="text-white font-extrabold text-5xl">Loading tasks...</p>
+    );
+  }
+  if (!userTasks || userTasks.length === 0) {
+    return (
+      <p className="text-white font-extrabold text-5xl">No tasks available</p>
+    );
+  }
   return (
-    <div className="bg-white p-16">
+    <div className="bg-red-200 p-20 rounded-lg shadow-lg pt-50">
       {userTasks.map((item) => {
         return (
           <div
-            key={item.task_id}
+            key={item.task_id || item._id}
             className="border-b py-3 flex justify-between"
           >
             <div>
@@ -73,7 +92,12 @@ const DisplayUserTasks = () => {
             </div>
 
             <div className="flex gap-4">
-              <button onClick={() => dispatch(deleteTask(item.task_id))}>
+              <button
+                onClick={() => {
+                  dispatch(deleteTask(item.task_id));
+                  console.log("Deleting:", item.task_id);
+                }}
+              >
                 <DeleteOutlined style={{ color: "red", fontSize: "1.5rem" }} />
               </button>
 

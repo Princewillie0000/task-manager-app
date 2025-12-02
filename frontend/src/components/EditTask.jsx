@@ -3,6 +3,7 @@ import { Modal, Input } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { updateTask } from "../features/task/taskSlice";
 import { useDispatch } from "react-redux";
+import { useEffect } from "react";
 
 const { TextArea } = Input;
 
@@ -14,6 +15,10 @@ const EditTask = (props) => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    setUpdateTaskContent(props.task_content);
+  }, [props.task_content]);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -23,7 +28,7 @@ const EditTask = (props) => {
     }
     dispatch(
       updateTask({
-        taskId: props.taskId,
+        task_id: props.task_id,
         update_task_content: updateTaskContent.trim(),
       })
     );
@@ -45,7 +50,7 @@ const EditTask = (props) => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <h2>Editing task with id: {props.taskId}</h2>
+        <h2>Editing task with id: {props.task_id}</h2>
         <TextArea
           value={updateTaskContent}
           onChange={(e) => setUpdateTaskContent(e.target.value)}

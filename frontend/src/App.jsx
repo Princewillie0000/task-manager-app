@@ -6,6 +6,7 @@ import RegisterPage from "./pages/protected/RegisterPage";
 import UserProfile from "./pages/protected/UserProfile";
 
 import ProtectedLayout from "./layout/ProtectedLayout";
+import NotFound from "./components/NotFound";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="login" element={<LoginPage />} />
       <Route path="register" element={<RegisterPage />} />
+      <Route path="*" element={<NotFound />} />
 
       {/** Protected layout */}
       <Route element={<ProtectedLayout />}>
